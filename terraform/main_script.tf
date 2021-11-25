@@ -84,7 +84,7 @@ resource "aws_db_instance" "wordpressdb" {
   allocated_storage      = 10
   engine                 = "mysql"
   engine_version         = "5.7"
-  instance_class         = "db.t3.micro"
+  instance_class         = "db.t2.micro"
   vpc_security_group_ids = ["${aws_security_group.RDS_allow_rule.id}"]
   name                   = var.database_name
   username               = var.database_user
@@ -93,15 +93,15 @@ resource "aws_db_instance" "wordpressdb" {
 }
 
 # change USERDATA varible value after grabbing RDS endpoint info
-data "template_file" "user_data" {
-  template = file("${path.module}/userdata_ubuntu.tpl")
-  vars = {
-    db_username      = "${var.database_user}"
-    db_user_password = "${var.database_password}"
-    db_name          = "${var.database_name}"
-    db_RDS           = "${aws_db_instance.wordpressdb.endpoint}"
-  }
-}
+# data "template_file" "user_data" {
+#   template = file("${path.module}/userdata_ubuntu.tpl")
+#   vars = {
+#     db_username      = "${var.database_user}"
+#     db_user_password = "${var.database_password}"
+#     db_name          = "${var.database_name}"
+#     db_RDS           = "${aws_db_instance.wordpressdb.endpoint}"
+#   }
+# }
 
 
 # Create EC2 ( only after RDS is provisioned)
@@ -109,8 +109,8 @@ resource "aws_instance" "wordpressec2" {
   ami             = var.ami
   instance_type   = var.instance_type
   security_groups = ["${aws_security_group.ec2_allow_rule.name}"]
-  user_data       = data.template_file.user_data.rendered
-  key_name        = var.key_name
+  # user_data       = data.template_file.user_data.rendered
+  key_name = var.key_name
   tags = {
     Name = "Wordpress.web"
   }
