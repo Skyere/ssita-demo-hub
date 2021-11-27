@@ -1,12 +1,3 @@
-provider "aws" {
-  profile                 = "terraform"
-  region                  = var.region
-  shared_credentials_file = var.shared_credentials_file
-}
-
-
-
-
 //security group for EC2
 
 resource "aws_security_group" "ec2_allow_rule" {
