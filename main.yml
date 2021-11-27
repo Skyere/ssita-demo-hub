@@ -1,0 +1,33 @@
+---
+- name: running wordpress
+  hosts: web
+  become: yes
+  tasks:
+    - name: install updates
+      yum: name=* state=latest  update_cache=yes
+    - name: manually install pip
+      shell: curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python
+    - name: installing php package
+      package:
+        name: php
+        state: present
+    - name: Install the nginx rpm from a remote repo
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        state: present
+    - name: install nginx
+      yum:
+        name: nginx
+        state: installed
+        update_cache: yes
+    - name: starting nginx
+      service: name=nginx state=started
+    - name: installing PyMySQl
+      pip:
+        name: pymysql
+    - name: installing mysql
+      yum:
+        name: mysql
+        state: installed
+        update_cache: yes   
+    

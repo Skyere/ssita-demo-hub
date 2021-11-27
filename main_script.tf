@@ -128,7 +128,7 @@ resource "null_resource" "Create_host" {
   depends_on = [aws_instance.wordpressec2]
 
   provisioner "local-exec" {
-      command = "echo ${aws_instance.wordpressec2.public_ip} >> hosts/hosts.ini"
+      command = "echo ${aws_eip.eip.public_ip} >> hosts/hosts.ini"
   
   }
 
