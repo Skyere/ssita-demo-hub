@@ -131,3 +131,15 @@ output "IP" {
 output "RDS-Endpoint" {
   value = aws_db_instance.wordpressdb.endpoint
 }
+
+resource "null_resource" "Create_host" {
+
+  depends_on = [aws_instance.wordpressec2]
+
+  provisioner "local-exec" {
+      command = "echo ${aws_instance.wordpressec2.public_ip} >> hosts/hosts.ini"
+  
+  }
+
+
+}
