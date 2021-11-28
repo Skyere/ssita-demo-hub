@@ -1,5 +1,5 @@
-//security group for EC2
 
+# Security group for EC2
 resource "aws_security_group" "ec2_allow_rule" {
 
 
@@ -57,7 +57,7 @@ resource "aws_security_group" "RDS_allow_rule" {
     protocol        = "tcp"
     security_groups = ["${aws_security_group.ec2_allow_rule.id}"]
   }
-  # Allow all outbound traffic.
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -81,32 +81,24 @@ resource "aws_db_instance" "wordpressdb" {
   username               = var.database_user
   password               = var.database_password
   skip_final_snapshot    = true
+  tags = {
+    Role = "db"
+    Env  = "rds"
+  }
 }
 
-# change USERDATA varible value after grabbing RDS endpoint info
-# data "template_file" "user_data" {
-#   template = file("${path.module}/userdata_ubuntu.tpl")
-#   vars = {
-#     db_username      = "${var.database_user}"
-#     db_user_password = "${var.database_password}"
-#     db_name          = "${var.database_name}"
-#     db_RDS           = "${aws_db_instance.wordpressdb.endpoint}"
-#   }
-# }
 
-
-# Create EC2 ( only after RDS is provisioned)
+# Create EC2
 resource "aws_instance" "wordpressec2" {
   ami             = var.ami
   instance_type   = var.instance_type
   security_groups = ["${aws_security_group.ec2_allow_rule.name}"]
-  # user_data       = data.template_file.user_data.rendered
   key_name = var.key_name
   tags = {
+    Role = "instance"
+    Env  = "ec2"
     Name = "Wordpress.web"
   }
-
-  # this will stop creating EC2 before RDS is provisioned
   depends_on = [aws_db_instance.wordpressdb]
 }
 
@@ -123,14 +115,22 @@ output "RDS-Endpoint" {
   value = aws_db_instance.wordpressdb.endpoint
 }
 
-resource "null_resource" "Create_host" {
+resource "null_resource" "Create_host_ec2" {
 
   depends_on = [aws_instance.wordpressec2]
 
   provisioner "local-exec" {
       command = "echo ${aws_eip.eip.public_ip} >> hosts/hosts.ini"
-  
+
   }
 
+resource "null_resource" "Create_host_db" {
+
+  depends_on = [aws_db_instance.wordpressdb]
+
+  provisioner "local-exec" {
+      command = "echo endpoint : ${aws_db_instance.wordpressdb.endpoint} >> roles/vars/db.yml"
+
+  }
 
 }
