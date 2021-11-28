@@ -123,13 +123,13 @@ resource "null_resource" "Create_host_ec2" {
       command = "echo ${aws_eip.eip.public_ip} >> hosts/hosts.ini"
 
   }
-
+}
 resource "null_resource" "Create_host_db" {
 
   depends_on = [aws_db_instance.wordpressdb]
 
   provisioner "local-exec" {
-      command = "echo endpoint : ${aws_db_instance.wordpressdb.endpoint} >> roles/vars/db.yml"
+      command = "echo endpoint: ${aws_db_instance.wordpressdb.endpoint} >> roles/vars/main.yml"
 
   }
 

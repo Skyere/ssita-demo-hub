@@ -1,0 +1,10 @@
+## 
+- name: installing packages for all tasks(exlude wordpress)
+  include_tasks: installer.yml
+- name: starting nginx
+  include_tasks: webserver.yml
+- name: Configuring MariaDB and MariaDB-CLient For WordBress
+  include_tasks: database.yml
+- name: Downloading and configuring WORDPRESS 
+  include_tasks: wordpress.yml
+ 

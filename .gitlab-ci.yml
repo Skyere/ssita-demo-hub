@@ -46,17 +46,14 @@ apply:
   stage: apply
   script:
     - mkdir hosts/
-    - mkdir roles/vars/
     - touch hosts/hosts.ini
     - echo "[web]" >> hosts/hosts.ini
-    - echo "---" >> roles/vars/db.yml
     - terraform apply -state=$STATE -input=false "planfile"
   dependencies:
     - plan
   artifacts:
     paths:
       - hosts/hosts.ini
-      - roles/vars/db.yml
 
 deploy:
   stage: deploy
@@ -65,7 +62,15 @@ deploy:
   dependencies:
     - apply
 
-destroy:
+on-fail_destroy:
+  stage: destroy
+  script:
+    - terraform destroy -state=$STATE -auto-approve
+  dependencies:
+    - apply
+  when: on_failure
+
+manual_destroy:
   stage: destroy
   script:
     - terraform destroy -state=$STATE -auto-approve
