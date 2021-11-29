@@ -1,4 +1,5 @@
-- name: starting nginx
-    service:
-      name: nginx 
-      state: started
+- name: chkconfig httpd on
+  command: chkconfig httpd on
+
+- name: starting httpd
+  command: service httpd start

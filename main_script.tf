@@ -111,8 +111,17 @@ resource "aws_eip" "eip" {
 output "IP" {
   value = aws_eip.eip.public_ip
 }
+
+output "RDS-Name" {
+  value = aws_db_instance.wordpressdb.name
+}
+
+output "RDS-User" {
+  value = aws_db_instance.wordpressdb.username
+}
+
 output "RDS-Endpoint" {
-  value = aws_db_instance.wordpressdb.endpoint
+  value = aws_db_instance.wordpressdb.address
 }
 
 resource "null_resource" "Create_host_ec2" {
@@ -127,9 +136,24 @@ resource "null_resource" "Create_host_ec2" {
 resource "null_resource" "Create_host_db" {
 
   depends_on = [aws_db_instance.wordpressdb]
+  
+  provisioner "local-exec" {
+      command = "echo db_name: ${aws_db_instance.wordpressdb.name} >> roles/vars/main.yml"
+
+  }
+  
+  provisioner "local-exec" {
+      command = "echo db_user: ${aws_db_instance.wordpressdb.username} >> roles/vars/main.yml"
+
+  }
+  
+  provisioner "local-exec" {
+      command = "echo db_pass: ${aws_db_instance.wordpressdb.password} >> roles/vars/main.yml"
+
+  }
 
   provisioner "local-exec" {
-      command = "echo endpoint: ${aws_db_instance.wordpressdb.endpoint} >> roles/vars/main.yml"
+      command = "echo db_endpoint: ${aws_db_instance.wordpressdb.address} >> roles/vars/main.yml"
 
   }
 

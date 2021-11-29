@@ -1,54 +1,11 @@
+
 - name: install updates
   yum: name=* state=latest  update_cache=yes
-- name: Installing epel-release and yum-utils to download updated version of PHP
-  yum: pkg={{ item }} state=present
-  with_items:
-   - epel-release
-   - yum-utils
-   - http://rpms.remirepo.net/enterprise/remi-release-7.rpm
-- name: enabling the PHP 7.3 Remi repository
-  command: yum-config-manager --enable remi-php73 -y
-  tags: php
-- name: Installing PHP and other pkgs
-  yum: pkg={{ item }}  state=present
-  with_items:
-   - php
-   - php-common
-   - php-mysql
-   - php-gd
-   - php-xml
-   - php-mbstring
-   - php-mcrypt
-   - php-xmlrpc
-   - unzip
-   - wget
-- name: manually install pip
-  shell: curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python
-- name: Install the nginx rpm from a remote repo
-  yum:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    state: present
-- name: install nginx
-  yum:
-    name: nginx
-    state: installed
-    update_cache: yes
-- name: installing PyMySQl
-  pip:
-    name: pymysql
-- name: installing mysql
-  yum:
-    name: mysql
-    state: installed
-    update_cache: yes   
-- name: Install MariaDB-Server
-  yum: 
-    pkg: mariadb-server 
-    state: present
-  tags: database
-- name: Install MariaDB-client
-  yum: pkg=mariadb state=present
-  tags: database
-- name: Install MySQL-python pkg
-  yum: pkg=MySQL-python state=present
-  tags: database    
+
+
+- name: Installing httpd
+  command: yum install httpd php php-mysql -y
+
+- name: Installing php
+  command: amazon-linux-extras install -y  php7.4
+

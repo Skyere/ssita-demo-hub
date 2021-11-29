@@ -48,12 +48,16 @@ apply:
     - mkdir hosts/
     - touch hosts/hosts.ini
     - echo "[web]" >> hosts/hosts.ini
+    - mkdir roles/vars
+    - touch roles/vars/main.yml
+    - echo "#[db credentials]" >> roles/vars/main.yml
     - terraform apply -state=$STATE -input=false "planfile"
   dependencies:
     - plan
   artifacts:
     paths:
       - hosts/hosts.ini
+      - roles/vars/main.yml
 
 deploy:
   stage: deploy
